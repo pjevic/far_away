@@ -2,12 +2,6 @@
 
 import { useState } from "react";
 
-const initialItems = [
-  { id: 1, description: "Passports", quantity: 2, packed: false },
-  { id: 2, description: "Socks", quantity: 12, packed: false },
-  { id: 3, description: "Charger", quantity: 3, packed: true },
-];
-
 export default function App() {
   const [items, setItems] = useState([]);
 
@@ -15,11 +9,15 @@ export default function App() {
     setItems((items) => [...items, newItem]);
   }
 
+  function handleDeleteItem(id) {
+    setItems((items) => items.filter((item) => item.id !== id));
+  }
+
   return (
     <div className="app">
       <Logo />
-      <Form onAddItems={handleAddItem} />
-      <PackingList items={items} />
+      <Form onAddItem={handleAddItem} />
+      <PackingList items={items} onDeleteItem={handleDeleteItem} />
       <Stats />
     </div>
   );
@@ -29,7 +27,7 @@ function Logo() {
   return <h1>🏝️ Far Away 🧳</h1>;
 }
 
-function Form({ onAddItems }) {
+function Form({ onAddItem }) {
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState(1);
 
@@ -44,7 +42,7 @@ function Form({ onAddItems }) {
       packed: false,
     };
 
-    onAddItems(newItem);
+    onAddItem(newItem);
     setDescription("");
     setQuantity(1);
   }
@@ -73,16 +71,18 @@ function Form({ onAddItems }) {
   );
 }
 
-function PackingList({ items }) {
+function PackingList({ items, onDeleteItem }) {
   return (
     <div className="list">
       <ul>
         {items.map((item) => (
           <Item
             key={item.id}
+            id={item.id}
             description={item.description}
             quantity={item.quantity}
             packed={item.packed}
+            onDeleteItem={onDeleteItem}
           />
         ))}
       </ul>
@@ -90,13 +90,13 @@ function PackingList({ items }) {
   );
 }
 
-function Item({ description, quantity, packed }) {
+function Item({ id, description, quantity, packed, onDeleteItem }) {
   return (
     <li className="">
       <span style={packed ? { textDecoration: "line-through" } : {}}>
         {quantity} {description}
       </span>
-      <button>❌</button>
+      <button onClick={() => onDeleteItem(id)}>❌</button>
     </li>
   );
 }
