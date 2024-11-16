@@ -13,11 +13,23 @@ export default function App() {
     setItems((items) => items.filter((item) => item.id !== id));
   }
 
+  function handleUpdateItem(id) {
+    setItems((items) =>
+      items.map((item) =>
+        item.id === id ? { ...item, packed: !item.packed } : item
+      )
+    );
+  }
+
   return (
     <div className="app">
       <Logo />
       <Form onAddItem={handleAddItem} />
-      <PackingList items={items} onDeleteItem={handleDeleteItem} />
+      <PackingList
+        items={items}
+        onDeleteItem={handleDeleteItem}
+        onUpdateItem={handleUpdateItem}
+      />
       <Stats />
     </div>
   );
@@ -71,7 +83,7 @@ function Form({ onAddItem }) {
   );
 }
 
-function PackingList({ items, onDeleteItem }) {
+function PackingList({ items, onDeleteItem, onUpdateItem }) {
   return (
     <div className="list">
       <ul>
@@ -83,6 +95,7 @@ function PackingList({ items, onDeleteItem }) {
             quantity={item.quantity}
             packed={item.packed}
             onDeleteItem={onDeleteItem}
+            onUpdateItem={onUpdateItem}
           />
         ))}
       </ul>
@@ -90,9 +103,17 @@ function PackingList({ items, onDeleteItem }) {
   );
 }
 
-function Item({ id, description, quantity, packed, onDeleteItem }) {
+function Item({
+  id,
+  description,
+  quantity,
+  packed,
+  onDeleteItem,
+  onUpdateItem,
+}) {
   return (
     <li className="">
+      <input type="checkbox" value={packed} onChange={() => onUpdateItem(id)} />
       <span style={packed ? { textDecoration: "line-through" } : {}}>
         {quantity} {description}
       </span>
